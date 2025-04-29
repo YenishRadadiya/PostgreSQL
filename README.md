@@ -34,6 +34,41 @@ This repository contains a PostgreSQL-based solution for a SQL practical problem
 
 ---
 
+```sql
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
+-- PRODUCTS table
+CREATE TABLE products (
+    product_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price NUMERIC(10, 2) NOT NULL CHECK (price >= 0)
+);
+
+-- ENUM type for order_status
+CREATE TYPE order_status_enum AS ENUM ('Pending', 'Delivered', 'Cancelled');
+
+-- ORDERS table
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id),
+    order_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    order_status order_status_enum NOT NULL,
+    expected_delivery_date DATE NOT NULL
+);
+
+-- ORDER_DETAILS table
+CREATE TABLE order_details (
+    order_detail_id SERIAL PRIMARY KEY,
+    order_id INTEGER REFERENCES orders(order_id),
+    product_id INTEGER REFERENCES products(product_id)
+);
+
+```
+
+
 ## 📦 Sample Data
 
 Sample data is inserted into each table for demonstrating the queries.
@@ -113,6 +148,8 @@ GROUP BY
 ORDER BY
     o.order_date;
 ```
+![User details](https://github.com/YenishRadadiya/PostgreSQL/blob/main/output/1.png)
+
 
 ### 2. Create summary report which provide information about
 
@@ -133,6 +170,9 @@ ORDER BY
   ORDER BY
       o.order_date DESC;
   ```
+  
+  ![All undelivered Orders](https://github.com/YenishRadadiya/PostgreSQL/blob/main/output/2(1).png)
+  
 - 5 Most recent orders
   ```sql
   SELECT
@@ -148,6 +188,9 @@ ORDER BY
       o.order_date DESC
   LIMIT 5;
   ```
+
+  ![5 Most recent orders](https://github.com/YenishRadadiya/PostgreSQL/blob/main/output/2(2).png)
+  
 - Top 5 active users (Users having most number of orders)
   ```sql
   SELECT
@@ -163,6 +206,8 @@ ORDER BY
       total_orders DESC
   LIMIT 5;
   ```
+  ![Top 5 active users (Users having most number of orders)](https://github.com/YenishRadadiya/PostgreSQL/blob/main/output/2(3).png)
+  
 - Inactive users (Users who hasn’t done any order)
   ```sql
   SELECT
@@ -174,6 +219,8 @@ ORDER BY
   WHERE
       o.order_id IS NULL;
   ```
+  ![Inactive users (Users who hasn’t done any order)](https://github.com/YenishRadadiya/PostgreSQL/blob/main/output/2(4).png)
+  
 - Top 5 Most purchased products
   ```sql
   SELECT
@@ -189,6 +236,8 @@ ORDER BY
       times_purchased DESC
   LIMIT 5;
   ```
+  ![Top 5 Most purchased products](https://github.com/YenishRadadiya/PostgreSQL/blob/main/output/2(5).png)
+  
 - Most expensive and most cheapest orders.
 
   ```sql
@@ -210,3 +259,5 @@ ORDER BY
      OR total_price = (SELECT MIN(total_price) FROM order_total);
 
   ```
+
+  ![Most expensive and most cheapest orders.](https://github.com/YenishRadadiya/PostgreSQL/blob/main/output/2(6).png)
